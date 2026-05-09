@@ -13,7 +13,7 @@ except ImportError:
 # --- Configuration ---
 PORT = 65432
 BUFFER_SIZE = 4096 # For the "Big File" problem [3]
-BUILT_IN_IPS = ["127.0.0.1", "192.168.1.15", "10.0.0.5"] # Option A list
+BUILT_IN_IPS = ["127.0.0.1", "192.168.1.171", "192.168.1.246"] # Option A list
 
 # --- Server Logic (Background Receiver) ---
 def start_receiver():
