@@ -1,7 +1,7 @@
 import socket
 import os
 
-SERVER_IP = '127.0.0.1'
+SERVER_IP = '192.168.1.171'
 PORT = 65432
 BUFFER_SIZE = 4096
 
