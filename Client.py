@@ -1,56 +1,54 @@
 import socket
 import os
 
-SERVER_IP = '192.168.1.171'
-PORT = 65432
-BUFFER_SIZE = 4096
+SERVER_IP, PORT, BUFFER_SIZE = '192.168.1.171', 65432, 4096
 
-def run_ping():
+def upload_logic(filename, folder):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((SERVER_IP, PORT))
-        s.sendall(b"PING")
-        return s.recv(BUFFER_SIZE).decode()
-
-def get_remote_list(folder):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((SERVER_IP, PORT))
-        s.sendall(b"LIST")
-        # Send folder header so server knows where to look
+        s.sendall(b"PUT ")
         s.sendall(f"{folder:<32}".encode())
-        return s.recv(BUFFER_SIZE).decode()
-
-def upload_file(filename, remote_folder):
-    if not os.path.exists(filename):
-        print(f"[!] Error: Local file {filename} not found.")
-        return
-
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((SERVER_IP, PORT))
-        s.sendall(b"PUT ") 
-        s.sendall(f"{remote_folder:<32}".encode())
         s.sendall(f"{filename:<32}".encode())
+
+        # Wait for Server status
+        status = s.recv(6).decode().strip()
+        if status == "EXISTS":
+            choice = input(f"[?] {filename} already exists. Overwrite? (y/n): ").lower()
+            if choice == 'y':
+                sure = input(f"    ARE YOU SURE you want to overwrite {filename}? (y/n): ").lower()
+                if sure == 'y':
+                    s.sendall(b"PROCEED")
+                else:
+                    s.sendall(b"CANCEL ")
+                    return
+            else:
+                s.sendall(b"CANCEL ")
+                return
         
+        # Stream file in 4KB chunks [3, 4]
         with open(filename, "rb") as f:
             while chunk := f.read(BUFFER_SIZE):
                 s.sendall(chunk)
-    print(f"[+] Finished uploading {filename} to {remote_folder}")
+    print(f"[+] {filename} upload complete.")
 
 if __name__ == "__main__":
-    # 1. Ask for destination folder
-    dest_folder = input("Step 1: Enter the remote destination folder: ")
-
-    # 2. Ping to verify connection
-    print(f"Step 2: Pinging server... ", end="")
-    status = run_ping()
-    print(f"Server Response: {status}")
-
-    # 3. List files from that specific folder
-    print(f"\nStep 3: Files already in '{dest_folder}':")
-    print(get_remote_list(dest_folder))
-
-    # 4. Ask which file(s) to upload
-    print("\nStep 4: Upload Selection")
-    user_input = input("Enter local filename(s) to upload (space separated): ")
+    dest_folder = input("Enter remote destination folder: ")
     
-    for file in user_input.split():
-        upload_file(file, dest_folder)
+    # Generate Numbered List [6]
+    local_files = [f for f in os.listdir('.') if os.path.isfile(f)]
+    print("\nLocal Files:")
+    for i, name in enumerate(local_files, 1):
+        print(f"{i}. {name}")
+    print("A. Upload ALL files")
+
+    selection = input("\nEnter file numbers (e.g. 1 3), or 'A' for all: ").strip().upper()
+    
+    files_to_send = []
+    if selection == 'A':
+        files_to_send = local_files
+    else:
+        indices = [int(x) - 1 for x in selection.split() if x.isdigit()]
+        files_to_send = [local_files[i] for i in indices if 0 <= i < len(local_files)]
+
+    for file in files_to_send:
+        upload_logic(file, dest_folder)
