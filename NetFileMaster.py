@@ -16,9 +16,9 @@ PORT = 65432
 BUFFER_SIZE = 4096 # Essential for the "Big File" problem [4]
 # Sub-menu A Data: Peer metadata
 BUILT_IN_PEERS = [
-    {"ip": "127.0.0.1", "Loopback IP": "Local Loopback", "os": platform.system()},
-    {"ip": "192.168.1.171", "Garuda": "Daily-Driver", "os": "Linux"},
-    {"ip": "192.168.1.246", "Mac Mini": "Monterey", "os": "Apple"}
+    {"ip": "127.0.0.1", "name": "Local Loopback", "os": platform.system()},
+    {"ip": "192.168.1.171", "name": "Garuda - Daily-Driver", "os": "Linux"},
+    {"ip": "192.168.1.246", "name": "Mac Mini - Monterey", "os": "Apple"}
 ]
 
 def get_local_ip():
