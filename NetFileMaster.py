@@ -109,11 +109,16 @@ def sender_menu():
         elif choice == "B":
             target_ip = input("Enter target IP: ")
 
-        # Path Selection
+        # --- Destination Pathing Logic ---
         paths = get_common_paths()
         print("\n--- DESTINATION FOLDER ---")
         for k, v in paths.items():
-            if k not in ["M", "R"]: print(f"{k}. {v} ({v[4]})")
+            if k not in ["M", "R"]: 
+                # This joins every item found in the tuple with " - "
+                # It won't crash regardless of how many items are in 'v'
+                display_text = " - ".join(v)
+                print(f"{k}. {display_text}")
+
         print("M. Manual Entry (Use ~ for Home)")
         print("R. Remote Explorer (See what's on the other PC)")
         
