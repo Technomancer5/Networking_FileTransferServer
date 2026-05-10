@@ -29,11 +29,11 @@ def get_common_paths():
     """Generates shortcuts for common system folders [5, 6]"""
     home = os.path.expanduser('~') 
     return {
-        "1": ("Downloads", os.path.join(home, "Downloads")),
-        "2": ("Pictures", os.path.join(home, "Pictures")),
-        "3": ("Videos", os.path.join(home, "Videos")),
-        "M": ("Manual Entry", "MANUAL"),
-        "R": ("Remote Explorer", "REMOTE")
+    "1": ("Downloads", "Downloads"), # Just send the name
+    "2": ("Pictures", "Pictures"),
+    "3": ("Videos", "Videos"),
+    "M": ("Manual Entry", "MANUAL"),
+    "R": ("Remote Explorer", "REMOTE")
     }
 
 # --- Server Logic (Background Receiver) ---
@@ -57,11 +57,19 @@ def start_receiver():
                     except:
                         conn.sendall(b"Error: Invalid Path")
 
-                elif command == "PUT":
+                 elif command == "PUT":
+                    # Receive the folder name and filename from the sender
                     folder = conn.recv(32).decode().strip()
                     filename = conn.recv(32).decode().strip()
-                    os.makedirs(folder, exist_ok=True)
-                    full_path = os.path.join(folder, filename)
+                    
+                    # NEW: Resolve the path locally on the Receiver (Mac)
+                    # This turns "Downloads" into "/Users/yourmacname/Downloads" [1]
+                    target_dir = os.path.expanduser(os.path.join("~", folder))
+                    os.makedirs(target_dir, exist_ok=True)
+                    
+                    full_path = os.path.join(target_dir, filename)
+                    
+                    # Receive the file in 4096-byte chunks to prevent RAM crashes [3, 4]
                     with open(full_path, "wb") as f:
                         while chunk := conn.recv(BUFFER_SIZE):
                             f.write(chunk)
