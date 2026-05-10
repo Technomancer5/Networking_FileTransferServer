@@ -140,6 +140,18 @@ def sender_menu():
             # (Your Remote Explorer logic remains here)
             pass
 
+        elif p_choice == "C":
+            # NEW: Logic for "Map Network (Simple List) & Enter"
+            print("\n--- KNOWN PEERS ---")
+            for i, peer in enumerate(BUILT_IN_PEERS, 1):
+                # Pulls Name, OS, and IP from your metadata list [1]
+                print(f"{i}. {peer['name']} [{peer['os']}] - {peer['ip']}")
+            
+            p_idx = int(input("Select peer number: ")) - 1
+            target_ip = BUILT_IN_PEERS[p_idx]['ip']
+            print(f"[!] Target set to: {target_ip}")
+            continue # Returns to menu to pick the folder/files now
+
         else:
             dest_folder = paths[p_choice][1]
 

@@ -1,6 +1,7 @@
  # Overview
 
-{Important!  Do not say in this section that this is college assignment.  Talk about what you are trying to accomplish as a software engineer to further your learning.}
+To increase my undertanding of how software/code works behind the scenes on networks.  I will use this software to 'hack' unencrypted files with my Flipper Zero and learn about the vulnerabilities on my network.  I will then use that information to further harden my network and ensure any of my successful previous 'hacking' is no longer possible.
+
 
 {Provide a description the networking program that you wrote. Describe how to use your software.  If you did Client/Server, then you will need to describe how to start both.}
 
