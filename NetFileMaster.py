@@ -57,7 +57,7 @@ def start_receiver():
                     except:
                         conn.sendall(b"Error: Invalid Path")
 
-                 elif command == "PUT":
+                elif command == "PUT":
                     # Receive the folder name and filename from the sender
                     folder = conn.recv(32).decode().strip()
                     filename = conn.recv(32).decode().strip()
